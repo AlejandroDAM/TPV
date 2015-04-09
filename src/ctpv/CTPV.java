@@ -6,17 +6,24 @@
 
 package ctpv;
 
+import java.util.HashMap;
+
 /**
  *
  * @author Alejandro
  */
 public class CTPV extends javax.swing.JFrame {
 
+    
+    private HiloEscuchador escuchador;
+    private HashMap<Long, VentanaInterna> ventanasInternas;
     /**
      * Creates new form CTPV
      */
     public CTPV() {
         initComponents();
+	ventanasInternas = new HashMap<Long, VentanaInterna>();
+        new HiloEscuchador(this).start();
     }
 
     /**
@@ -31,19 +38,11 @@ public class CTPV extends javax.swing.JFrame {
         jDesktopPane1 = new javax.swing.JDesktopPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("CTPV");
+        setMinimumSize(new java.awt.Dimension(820, 608));
 
         jDesktopPane1.setBackground(new java.awt.Color(240, 240, 240));
-
-        javax.swing.GroupLayout jDesktopPane1Layout = new javax.swing.GroupLayout(jDesktopPane1);
-        jDesktopPane1.setLayout(jDesktopPane1Layout);
-        jDesktopPane1Layout.setHorizontalGroup(
-            jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 396, Short.MAX_VALUE)
-        );
-        jDesktopPane1Layout.setVerticalGroup(
-            jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 256, Short.MAX_VALUE)
-        );
+        jDesktopPane1.setLayout(new java.awt.GridLayout(0, 3));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -63,6 +62,7 @@ public class CTPV extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     /**
@@ -99,6 +99,20 @@ public class CTPV extends javax.swing.JFrame {
             }
         });
     }
+    public void añadirVentana(long id){
+		VentanaInterna cliente = new VentanaInterna();
+		ventanasInternas.put(id, cliente);
+		cliente.setLocation(50, 26);
+		cliente.setVisible(true);
+		jDesktopPane1.add(cliente);
+	}
+	
+	public void removerVentana(long id){
+		//VentanaInterna cliente = ventanasInternas.get(id);
+		jDesktopPane1.remove(ventanasInternas.get(id));
+                repaint();
+                pack();
+	}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;

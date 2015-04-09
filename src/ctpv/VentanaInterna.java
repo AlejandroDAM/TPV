@@ -6,19 +6,25 @@
 
 package ctpv;
 
+import java.net.Socket;
+import javax.swing.JFrame;
+
 /**
  *
  * @author Alejandro
  */
-public class VentanaInterna extends javax.swing.JInternalFrame {
+public class VentanaInterna extends javax.swing.JInternalFrame implements Runnable{
 
+    public JFrame ventana;
+    public Socket conexion;
     /**
      * Creates new form VentanaInterna
      */
     public VentanaInterna() {
         initComponents();
     }
-
+    
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -35,6 +41,8 @@ public class VentanaInterna extends javax.swing.JInternalFrame {
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
+
+        setTitle("TPV");
 
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
@@ -73,9 +81,9 @@ public class VentanaInterna extends javax.swing.JInternalFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel3))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel2))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(14, 14, 14)
@@ -119,4 +127,11 @@ public class VentanaInterna extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea1;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void run() {
+        while(true){
+            
+        }
+    }
 }

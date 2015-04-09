@@ -5,6 +5,7 @@
  */
 package tpv;
 
+import comunicacion.InformacionTPV;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
@@ -12,10 +13,15 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 
 import javax.swing.JButton;
@@ -45,6 +51,9 @@ public class TPVJFrame extends JFrame {
     private HashMap<String, ProductoPedido> listaPedidos; // Aqui se almacenan los productos pedidos
     private JPanel jPanelListaProductos; // Panel donde van apareciendo los productos de las distintas familias
     private JTable tabla;
+    //----Campos para el servidor
+    private static final int PUERTO = 2000;
+    private long ID = System.currentTimeMillis();
 
     //---------- CONSTRUCTOR
     /**
@@ -54,6 +63,16 @@ public class TPVJFrame extends JFrame {
         super("TPV");
         crearVentana();
         setVisible(true);
+        try {
+            Socket cliente = new Socket("127.0.0.1", PUERTO);
+            System.out.println("Conexion establecida");
+            InformacionTPV informacionTPV = new InformacionTPV(ID, true);
+            ObjectOutputStream oos = new ObjectOutputStream(cliente.getOutputStream());
+            oos.writeObject(informacionTPV);
+            cliente.close();
+        } catch (IOException ex) {
+            Logger.getLogger(TPVJFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     //----------METODOS
@@ -67,9 +86,29 @@ public class TPVJFrame extends JFrame {
         crearEncabezado();
         crearZonaProductos();
         crearZonaFactura();
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                cerrarVentanaInterna();
+            }
+        });
         add(jPanelTPV);
         pack();
+    }
+
+    private void cerrarVentanaInterna() {
+        InformacionTPV informacionTPV = new InformacionTPV(ID, false);
+        ObjectOutputStream oos;
+        try {
+            Socket cliente = new Socket("127.0.0.1", PUERTO);
+            oos = new ObjectOutputStream(cliente.getOutputStream());
+            oos.writeObject(informacionTPV);
+            cliente.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        System.out.println("Cliente cerrado");
+        System.exit(0);
     }
 
     /**
@@ -110,7 +149,7 @@ public class TPVJFrame extends JFrame {
         jButtonSalir.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                System.exit(0);
+                cerrarVentanaInterna();
             }
         });
         jPanelIzquierdo.add(jButtonSalir);
@@ -294,16 +333,15 @@ public class TPVJFrame extends JFrame {
         int cantidad = 1;
         float total = precio;
         if (listaPedidos.containsKey(nombre)) {
-            if(nombre.equals(nombre)){
+            if (nombre.equals(nombre)) {
                 total = listaPedidos.get(nombre).getTotal() + precio;
             }
             cantidad = listaPedidos.get(nombre).getCantidad() + 1;
         }
         ProductoPedido nuevoPedido;
-        if(nombre.equals("Otros")){
-            nuevoPedido= new ProductoOtros(nombre, precio, cantidad, total);
-        }
-        else{
+        if (nombre.equals("Otros")) {
+            nuevoPedido = new ProductoOtros(nombre, precio, cantidad, total);
+        } else {
             nuevoPedido = new ProductoPedido(nombre, precio, cantidad);
         }
         listaPedidos.put(nombre, nuevoPedido);
@@ -328,7 +366,7 @@ public class TPVJFrame extends JFrame {
         for (String string : listaPedidos.keySet()) {
             total += listaPedidos.get(string).getTotal();
         }
-        String val = total +"";
+        String val = total + "";
         BigDecimal big = new BigDecimal(val);
         big = big.setScale(2, RoundingMode.HALF_UP);
         jLabelTotal.setText("" + big);
@@ -342,8 +380,8 @@ public class TPVJFrame extends JFrame {
         actualizarTabla();
         actualizarTotal();
     }
-    
-    private void crearCalculadora (){
+
+    private void crearCalculadora() {
         Calculadora calculadora = new Calculadora(this);
     }
 
