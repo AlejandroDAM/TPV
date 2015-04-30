@@ -9,7 +9,8 @@ import comunicacion.InformacionTPV;
 import javax.swing.JFrame;
 
 public class HiloEscuchador extends Thread {
-
+    private static final int NUM_CLIENTES = 6;
+    private int contador;
     private static final int PUERTO = 2000;
     private CTPV ventanaServidor;
 
@@ -23,15 +24,22 @@ public class HiloEscuchador extends Thread {
         try {
             ServerSocket servidor = new ServerSocket(PUERTO);
             while (true) {
-                Socket conexionCliente = servidor.accept();
-                if (conexionCliente != null) {
-                    ObjectInputStream entrada = new ObjectInputStream(conexionCliente.getInputStream());
-                    InformacionTPV datosTPV = (InformacionTPV) entrada.readObject();
-                    if (datosTPV.isEstado()) {
-                        ventanaServidor.añadirVentana(datosTPV.getId());
-                    } else {
-                        ventanaServidor.removerVentana(datosTPV.getId());
+                contador = ventanaServidor.getContador();
+                if (contador < NUM_CLIENTES){
+                    Socket conexionCliente = servidor.accept();
+                    if (conexionCliente != null) {
+                        ObjectInputStream entrada = new ObjectInputStream(conexionCliente.getInputStream());
+                        InformacionTPV datosTPV = (InformacionTPV) entrada.readObject();
+                        if (datosTPV.isEstado() && contador <= NUM_CLIENTES) {
+                            ventanaServidor.añadirVentana(datosTPV.getId());
+                        } else if (!datosTPV.isEstado()){
+                            ventanaServidor.removerVentana(datosTPV.getId());
+                        } else{
+                            System.out.println("Maximas conexiones establecidas");
+                        }
                     }
+                }else{
+                    System.out.println("Maximas conexiones establecidas");
                 }
             }
         } catch (IOException e) {

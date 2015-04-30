@@ -6,14 +6,20 @@
 
 package ctpv;
 
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.util.HashMap;
+import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 
 /**
  *
  * @author Alejandro
  */
 public class CTPV extends javax.swing.JFrame {
-
+    
+    private static final int NUM_CLIENTES = 6;
+    private int contador = 0;
     
     private HiloEscuchador escuchador;
     private HashMap<Long, VentanaInterna> ventanasInternas;
@@ -22,6 +28,7 @@ public class CTPV extends javax.swing.JFrame {
      */
     public CTPV() {
         initComponents();
+        //setIconImage(new javax.swing.ImageIcon(getClass().getResource("/ctpv/icono.png")).getImage());
 	ventanasInternas = new HashMap<Long, VentanaInterna>();
         new HiloEscuchador(this).start();
     }
@@ -39,6 +46,7 @@ public class CTPV extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("CTPV");
+        setExtendedState(MAXIMIZED_BOTH);
         setMinimumSize(new java.awt.Dimension(820, 608));
 
         jDesktopPane1.setBackground(new java.awt.Color(240, 240, 240));
@@ -50,14 +58,14 @@ public class CTPV extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jDesktopPane1)
+                .addComponent(jDesktopPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jDesktopPane1)
+                .addComponent(jDesktopPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 179, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -105,15 +113,25 @@ public class CTPV extends javax.swing.JFrame {
 		cliente.setLocation(50, 26);
 		cliente.setVisible(true);
 		jDesktopPane1.add(cliente);
+                contador++;
 	}
 	
 	public void removerVentana(long id){
 		//VentanaInterna cliente = ventanasInternas.get(id);
 		jDesktopPane1.remove(ventanasInternas.get(id));
+                JOptionPane.showMessageDialog(null, "Cliente servido.");
                 repaint();
-                pack();
+                contador--;
 	}
 
+    public int getContador() {
+        return contador;
+    }
+
+    public void setContador(int contador) {
+        this.contador = contador;
+    }
+        
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
     // End of variables declaration//GEN-END:variables
