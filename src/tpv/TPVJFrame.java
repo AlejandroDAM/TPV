@@ -6,7 +6,6 @@
 package tpv;
 
 import comunicacion.InformacionTPV;
-import comunicacion.InformacionTicket;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
@@ -15,6 +14,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -54,7 +54,7 @@ public class TPVJFrame extends JFrame {
     private JTable tabla;
     //----Campos para el servidor
     private static final int PUERTO = 2000;
-    private static final int PUERTO2 = 3000;
+    private int puerto2 = 3000;
     private long ID = System.currentTimeMillis();
     private Socket cliente;
     private Socket cliente2;
@@ -70,10 +70,10 @@ public class TPVJFrame extends JFrame {
         try {
             cliente = new Socket("127.0.0.1", PUERTO);
             System.out.println("Conexion establecida");
-            InformacionTPV informacionTPV = new InformacionTPV(ID, true);
+            InformacionTPV informacionTPV = new InformacionTPV(ID, 1);
             oos = new ObjectOutputStream(cliente.getOutputStream());
             oos.writeObject(informacionTPV);
-            cliente.close();
+            //cliente.close();
         } catch (IOException ex) {
             Logger.getLogger(TPVJFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -100,7 +100,7 @@ public class TPVJFrame extends JFrame {
     }
 
     private void cerrarVentanaInterna() {
-        InformacionTPV informacionTPV = new InformacionTPV(ID, false);
+        InformacionTPV informacionTPV = new InformacionTPV(ID, 0);
         //ObjectOutputStream oos;
         try {
             cliente = new Socket("127.0.0.1", PUERTO);
@@ -375,11 +375,10 @@ public class TPVJFrame extends JFrame {
         big = big.setScale(2, RoundingMode.HALF_UP);
         jLabelTotal.setText("" + big);
         try {
-            cliente2 = new Socket("127.0.0.1", PUERTO2);
-            InformacionTicket informacionTicket = new InformacionTicket(tabla, big);
-            oos = new ObjectOutputStream(cliente2.getOutputStream());
-            oos.writeObject(informacionTicket);
-            cliente2.close();
+            InformacionTPV informacionTPV = new InformacionTPV(ID, 2, tabla, big);
+            cliente = new Socket("127.0.0.1", PUERTO);
+            oos = new ObjectOutputStream(cliente.getOutputStream());
+            oos.writeObject(informacionTPV);
         } catch (IOException ex) {
             Logger.getLogger(TPVJFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -397,7 +396,7 @@ public class TPVJFrame extends JFrame {
     private void crearCalculadora() {
         Calculadora calculadora = new Calculadora(this);
     }
-
+    
     public static void main(String[] args) {
         TPVJFrame ventana = new TPVJFrame();
     }

@@ -20,7 +20,7 @@ import javax.swing.JScrollPane;
 public class CTPV extends javax.swing.JFrame {
     
     private static final int NUM_CLIENTES = 6;
-    private int contadorVentanas;
+    private int contadorVentanas = 0;
     private int contadorTPV = 0;
     
     private HiloEscuchador escuchador;
@@ -30,7 +30,7 @@ public class CTPV extends javax.swing.JFrame {
      */
     public CTPV() {
         initComponents();
-        //setIconImage(new javax.swing.ImageIcon(getClass().getResource("/ctpv/icono.png")).getImage());
+        //setIconImage(new ImageIcon(getClass().getResource("/ctpv/icono.png")).getImage());
 	ventanasInternas = new HashMap<Long, VentanaInterna>();
         new HiloEscuchador(this).start();
     }
@@ -117,20 +117,29 @@ public class CTPV extends javax.swing.JFrame {
 		jDesktopPane1.add(cliente);
                 contadorVentanas++;
                 contadorTPV++;
-                
-                cliente.start();
-	}
+    }
 	
-	public void removerVentana(long id){
-		//VentanaInterna cliente = ventanasInternas.get(id);
-		jDesktopPane1.remove(ventanasInternas.get(id));
-                JOptionPane.showMessageDialog(null, "Cliente servido.");
-                repaint();
-                contadorTPV--;
-	}
-
+    public void removerVentana(long id){
+        try{
+            //VentanaInterna cliente = ventanasInternas.get(id);
+            jDesktopPane1.remove(ventanasInternas.get(id));
+            JOptionPane.showMessageDialog(null, "Cliente servido.");
+            repaint();
+            contadorTPV--;
+        }catch (NullPointerException e) {
+        }
+    }
+    
+    public VentanaInterna getVentanaInterna(long id){
+        return ventanasInternas.get(id);
+    }
+    
     public int getContadorTPV() {
         return contadorTPV;
+    }
+
+    public int getContadorVentanas() {
+        return contadorVentanas;
     }
         
     // Variables declaration - do not modify//GEN-BEGIN:variables

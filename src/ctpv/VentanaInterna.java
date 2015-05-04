@@ -7,7 +7,6 @@
 package ctpv;
 
 import comunicacion.InformacionTPV;
-import comunicacion.InformacionTicket;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
@@ -23,8 +22,8 @@ import javax.swing.JTable;
  *
  * @author Alejandro
  */
-public class VentanaInterna extends javax.swing.JInternalFrame implements Runnable{
-    private int PUERTO = 3000;
+public class VentanaInterna extends javax.swing.JInternalFrame{
+    private int puerto = 3000;
     Thread hilo;
     private int contador;
     public JFrame ventana;
@@ -35,7 +34,7 @@ public class VentanaInterna extends javax.swing.JInternalFrame implements Runnab
      */
     public VentanaInterna(int contador) {
         initComponents();
-        this.contador = contador + PUERTO;
+        this.contador = contador + puerto;
     }
     
     
@@ -141,7 +140,7 @@ public class VentanaInterna extends javax.swing.JInternalFrame implements Runnab
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea1;
     // End of variables declaration//GEN-END:variables
-
+/*
     public void start(){
      if(hilo==null){
         hilo=new Thread(this);
@@ -169,7 +168,7 @@ public class VentanaInterna extends javax.swing.JInternalFrame implements Runnab
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-    }
+    }*/
 
     public JScrollPane getjScrollPane1() {
         return jScrollPane1;
