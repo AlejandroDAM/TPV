@@ -6,22 +6,36 @@
 
 package ctpv;
 
+import comunicacion.InformacionTPV;
+import comunicacion.InformacionTicket;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 
 /**
  *
  * @author Alejandro
  */
 public class VentanaInterna extends javax.swing.JInternalFrame implements Runnable{
-
+    private int PUERTO = 3000;
+    Thread hilo;
+    private int contador;
     public JFrame ventana;
     public Socket conexion;
+    private JTable tabla;
     /**
      * Creates new form VentanaInterna
      */
-    public VentanaInterna() {
+    public VentanaInterna(int contador) {
         initComponents();
+        this.contador = contador + PUERTO;
     }
     
     
@@ -40,7 +54,7 @@ public class VentanaInterna extends javax.swing.JInternalFrame implements Runnab
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
+        jLabelPrecio = new javax.swing.JLabel();
 
         setTitle("TPV");
 
@@ -55,8 +69,8 @@ public class VentanaInterna extends javax.swing.JInternalFrame implements Runnab
         jLabel4.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel4.setText("Total Venta");
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel1.setText("5,00€");
+        jLabelPrecio.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabelPrecio.setText("5,00€");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -73,7 +87,7 @@ public class VentanaInterna extends javax.swing.JInternalFrame implements Runnab
                         .addGroup(jPanel1Layout.createSequentialGroup()
                             .addGap(34, 34, 34)
                             .addComponent(jLabel4))
-                        .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addComponent(jLabelPrecio, javax.swing.GroupLayout.Alignment.TRAILING))
                     .addComponent(jLabel3))
                 .addContainerGap())
         );
@@ -93,7 +107,7 @@ public class VentanaInterna extends javax.swing.JInternalFrame implements Runnab
                         .addGap(18, 18, 18)
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel1)
+                        .addComponent(jLabelPrecio)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
@@ -119,19 +133,54 @@ public class VentanaInterna extends javax.swing.JInternalFrame implements Runnab
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabelPrecio;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea1;
     // End of variables declaration//GEN-END:variables
 
+    public void start(){
+     if(hilo==null){
+        hilo=new Thread(this);
+        hilo.start();
+     }
+  }
     @Override
     public void run() {
-        while(true){
-            
+        try {
+            ServerSocket servidor = new ServerSocket(contador);
+              while (true) {
+                    Socket conexionCliente = servidor.accept();
+                    if (conexionCliente != null) {
+                        ObjectInputStream entrada = new ObjectInputStream(conexionCliente.getInputStream());
+                        InformacionTicket datosTicket = (InformacionTicket) entrada.readObject();
+                        tabla = datosTicket.getTabla();
+                        jScrollPane1.setViewportView(tabla);
+                        jLabelPrecio.setText(datosTicket.getBig()+"");
+                   }
+              }
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
+
+    public JScrollPane getjScrollPane1() {
+        return jScrollPane1;
+    }
+
+    public JLabel getjLabelPrecio() {
+        return jLabelPrecio;
+    }
+    
+    public JTable getTabla() {
+        return tabla;
+    }
+    
 }

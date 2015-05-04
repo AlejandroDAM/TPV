@@ -11,6 +11,7 @@ import java.awt.Toolkit;
 import java.util.HashMap;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 
 /**
  *
@@ -19,7 +20,8 @@ import javax.swing.JOptionPane;
 public class CTPV extends javax.swing.JFrame {
     
     private static final int NUM_CLIENTES = 6;
-    private int contador = 0;
+    private int contadorVentanas;
+    private int contadorTPV = 0;
     
     private HiloEscuchador escuchador;
     private HashMap<Long, VentanaInterna> ventanasInternas;
@@ -108,12 +110,15 @@ public class CTPV extends javax.swing.JFrame {
         });
     }
     public void añadirVentana(long id){
-		VentanaInterna cliente = new VentanaInterna();
+		VentanaInterna cliente = new VentanaInterna(contadorVentanas);
 		ventanasInternas.put(id, cliente);
 		cliente.setLocation(50, 26);
 		cliente.setVisible(true);
 		jDesktopPane1.add(cliente);
-                contador++;
+                contadorVentanas++;
+                contadorTPV++;
+                
+                cliente.start();
 	}
 	
 	public void removerVentana(long id){
@@ -121,15 +126,11 @@ public class CTPV extends javax.swing.JFrame {
 		jDesktopPane1.remove(ventanasInternas.get(id));
                 JOptionPane.showMessageDialog(null, "Cliente servido.");
                 repaint();
-                contador--;
+                contadorTPV--;
 	}
 
-    public int getContador() {
-        return contador;
-    }
-
-    public void setContador(int contador) {
-        this.contador = contador;
+    public int getContadorTPV() {
+        return contadorTPV;
     }
         
     // Variables declaration - do not modify//GEN-BEGIN:variables

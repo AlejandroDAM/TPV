@@ -24,23 +24,21 @@ public class HiloEscuchador extends Thread {
         try {
             ServerSocket servidor = new ServerSocket(PUERTO);
             while (true) {
-                contador = ventanaServidor.getContador();
-                if (contador < NUM_CLIENTES){
-                    Socket conexionCliente = servidor.accept();
+                Socket conexionCliente = servidor.accept();
+                contador = ventanaServidor.getContadorTPV();
                     if (conexionCliente != null) {
                         ObjectInputStream entrada = new ObjectInputStream(conexionCliente.getInputStream());
                         InformacionTPV datosTPV = (InformacionTPV) entrada.readObject();
-                        if (datosTPV.isEstado() && contador <= NUM_CLIENTES) {
+                        if (datosTPV.isEstado() && contador < NUM_CLIENTES) {
                             ventanaServidor.añadirVentana(datosTPV.getId());
+                            System.out.println("Ventana añadida");
                         } else if (!datosTPV.isEstado()){
                             ventanaServidor.removerVentana(datosTPV.getId());
+                            System.out.println("Ventana cerrada");   
                         } else{
                             System.out.println("Maximas conexiones establecidas");
                         }
                     }
-                }else{
-                    System.out.println("Maximas conexiones establecidas");
-                }
             }
         } catch (IOException e) {
             // TODO Auto-generated catch block
@@ -48,6 +46,8 @@ public class HiloEscuchador extends Thread {
         } catch (ClassNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        } catch (NullPointerException e) {
+            
         }
     }
 
