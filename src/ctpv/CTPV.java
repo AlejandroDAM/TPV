@@ -8,10 +8,20 @@ package ctpv;
 
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+import tpv.ProductoPedido;
 
 /**
  *
@@ -25,14 +35,35 @@ public class CTPV extends javax.swing.JFrame {
     
     private HiloEscuchador escuchador;
     private HashMap<Long, VentanaInterna> ventanasInternas;
+    File archivo;
+    FileWriter fw;
+    BufferedWriter fichero;
+    
     /**
      * Creates new form CTPV
      */
     public CTPV() {
-        initComponents();
-        //setIconImage(new ImageIcon(getClass().getResource("/ctpv/icono.png")).getImage());
-	ventanasInternas = new HashMap<Long, VentanaInterna>();
-        new HiloEscuchador(this).start();
+        try {
+            initComponents();
+            //setIconImage(new ImageIcon(getClass().getResource("/ctpv/icono.png")).getImage());
+            ventanasInternas = new HashMap<Long, VentanaInterna>();
+            new HiloEscuchador(this).start();
+            archivo = new File("Ventas.txt");
+            fw = new FileWriter(archivo);
+            fichero = new BufferedWriter(fw);
+            addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                try {
+                    fichero.close();
+                    fw.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(CTPV.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        } catch (IOException ex) {
+            Logger.getLogger(CTPV.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -121,12 +152,24 @@ public class CTPV extends javax.swing.JFrame {
 	
     public void removerVentana(long id){
         try{
-            //VentanaInterna cliente = ventanasInternas.get(id);
-            jDesktopPane1.remove(ventanasInternas.get(id));
+            VentanaInterna cliente = ventanasInternas.get(id);
+            DefaultTableModel tabla = (DefaultTableModel) cliente.getjTable1().getModel();
+            fichero.append(cliente.getTitle() + "\n");
+            for (int i = 0; i < tabla.getRowCount(); i++) {
+                String lineaPedido = "";
+                for (int j = 0; j < tabla.getColumnCount(); j++) {
+                    lineaPedido += tabla.getValueAt(i, j);
+                }
+                fichero.append(lineaPedido + "\n");
+            }
+            fichero.append("\n");
+            jDesktopPane1.remove(cliente);
             JOptionPane.showMessageDialog(null, "Cliente servido.");
             repaint();
             contadorTPV--;
         }catch (NullPointerException e) {
+        } catch (IOException ex) {
+            Logger.getLogger(CTPV.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     

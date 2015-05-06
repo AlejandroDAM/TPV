@@ -14,6 +14,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
@@ -52,12 +53,12 @@ public class TPVJFrame extends JFrame {
     private HashMap<String, ProductoPedido> listaPedidos; // Aqui se almacenan los productos pedidos
     private JPanel jPanelListaProductos; // Panel donde van apareciendo los productos de las distintas familias
     private JTable tabla;
+    
     //----Campos para el servidor
     private static final int PUERTO = 2000;
     private int puerto2 = 3000;
     private long ID = System.currentTimeMillis();
     private Socket cliente;
-    private Socket cliente2;
     private ObjectOutputStream oos;
     //---------- CONSTRUCTOR
     /**
@@ -374,20 +375,25 @@ public class TPVJFrame extends JFrame {
         BigDecimal big = new BigDecimal(val);
         big = big.setScale(2, RoundingMode.HALF_UP);
         jLabelTotal.setText("" + big);
+        enviarInformacion(big);
+    }
+
+    private void enviarInformacion(BigDecimal big) {
         try {
-            InformacionTPV informacionTPV = new InformacionTPV(ID, 2, tabla, big);
+            InformacionTPV informacionTPV = new InformacionTPV(ID, 2, listaPedidos, big);
             cliente = new Socket("127.0.0.1", PUERTO);
             oos = new ObjectOutputStream(cliente.getOutputStream());
             oos.writeObject(informacionTPV);
         } catch (IOException ex) {
             Logger.getLogger(TPVJFrame.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Error");
         }
     }
 
     private void eliminar() {
-        int[] indices = tabla.getSelectedRows();
-        for (int i = 0; i < indices.length; i++) {
-            listaPedidos.remove((String) modeloTabla.getValueAt(indices[i], 0));
+        int [] eliminar = tabla.getSelectedRows();
+        for (int i = 0; i < eliminar.length; i++) {
+            listaPedidos.remove((String) modeloTabla.getValueAt(eliminar[i], 0));
         }
         actualizarTabla();
         actualizarTotal();

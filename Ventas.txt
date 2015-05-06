@@ -1,0 +1,15 @@
+TPV 0
+Coca-Cola Zero11.60
+Coca-Cola11.40
+Fanta45.60
+
+TPV 2
+Barcelo13.40
+Ballantines13.50
+Bacardi13.40
+
+TPV 1
+Brugal13.30
+Barcelo13.40
+Chivas Regal13.90
+
