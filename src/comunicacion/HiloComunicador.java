@@ -37,42 +37,39 @@ public class HiloComunicador extends Thread {
     @Override
     public void run() {
                 try {
+                    entrada = new ObjectInputStream(accept.getInputStream());
                     while(true){
-                entrada = new ObjectInputStream(accept.getInputStream());
                 
-                    InformacionTPV datosTPV = null;
-                    boolean noLee = true;
-                    while(noLee){
+                        InformacionTPV datosTPV = null;
                         datosTPV = (InformacionTPV) entrada.readObject();
-                        noLee = false;
-                    }
-                    VentanaInterna ventanaInterna = ventanaServidor.getVentanaInterna(datosTPV.getId());
-                    if (datosTPV.getEstado() == 1) {
-                        ventanaServidor.añadirVentana(datosTPV.getId());
-                        System.out.println("Ventana añadida");
-                    } else if (datosTPV.getEstado() == 0) {
-                        ventanaServidor.removerVentana(datosTPV.getId());
-                        System.out.println("Ventana cerrada");
-                    } else if (datosTPV.getEstado() == 2) {
-                        HashMap<String, ProductoPedido> listaPedidos = datosTPV.getListaPedidos();
-                        DefaultTableModel modeloTabla = new DefaultTableModel();
-                        //Añadimos las columnas a la tabla
-                        modeloTabla.addColumn("Productos");
-                        modeloTabla.addColumn("Cantidad");
-                        modeloTabla.addColumn("Sub-total");
-                        for (String string : listaPedidos.keySet()) {
-                            modeloTabla.addRow(listaPedidos.get(string).getProducto());
+
+                        VentanaInterna ventanaInterna = ventanaServidor.getVentanaInterna(datosTPV.getId());
+                        if (datosTPV.getEstado() == 1) {
+                            ventanaServidor.añadirVentana(datosTPV.getId());
+                            System.out.println("Ventana añadida");
+                        } else if (datosTPV.getEstado() == 0) {
+                            ventanaServidor.removerVentana(datosTPV.getId());
+                            System.out.println("Ventana cerrada");
+                        } else if (datosTPV.getEstado() == 2) {
+                            HashMap<String, ProductoPedido> listaPedidos = datosTPV.getListaPedidos();
+                            DefaultTableModel modeloTabla = new DefaultTableModel();
+                            //Añadimos las columnas a la tabla
+                            modeloTabla.addColumn("Productos");
+                            modeloTabla.addColumn("Cantidad");
+                            modeloTabla.addColumn("Sub-total");
+                            for (String string : listaPedidos.keySet()) {
+                                modeloTabla.addRow(listaPedidos.get(string).getProducto());
+                            }
+                            JTable tabla = ventanaInterna.getjTable1();
+                            tabla.setModel(modeloTabla);
+                            JScrollPane jScrollPane1 = ventanaInterna.getjScrollPane1();
+                            jScrollPane1.setViewportView(tabla);
+                            JLabel jLabelPrecio = ventanaInterna.getjLabelPrecio();
+                            jLabelPrecio.setText(datosTPV.getBig() + " €");
+                        } else {
+                            System.out.println("Maximas conexiones establecidas");
                         }
-                        JTable tabla = ventanaInterna.getjTable1();
-                        tabla.setModel(modeloTabla);
-                        JScrollPane jScrollPane1 = ventanaInterna.getjScrollPane1();
-                        jScrollPane1.setViewportView(tabla);
-                        JLabel jLabelPrecio = ventanaInterna.getjLabelPrecio();
-                        jLabelPrecio.setText(datosTPV.getBig() + " €");
-                    } else {
-                        System.out.println("Maximas conexiones establecidas");
                     }
-                }
                 } catch (IOException ex) {
                     Logger.getLogger(HiloComunicador.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (ClassNotFoundException ex) {

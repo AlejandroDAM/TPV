@@ -34,7 +34,7 @@ public class CTPV extends javax.swing.JFrame {
     private HashMap<Long, VentanaInterna> ventanasInternas;
     File archivo;
     FileWriter fw;
-    BufferedWriter fichero;
+    BufferedWriter escritor;
     
     /**
      * Creates new form CTPV
@@ -45,23 +45,31 @@ public class CTPV extends javax.swing.JFrame {
             setIconImage(new ImageIcon(getClass().getResource("/iconos/icono.png")).getImage());
             ventanasInternas = new HashMap<Long, VentanaInterna>();
             new HiloEscuchador(this).start();
-            archivo = new File("Ventas.txt");
-            fw = new FileWriter(archivo);
-            fichero = new BufferedWriter(fw);
+            //Escribir en fichero ventas.txt
+            File archivo = new File("Ventas.txt");
+            if (!archivo.exists()) {
+                archivo.createNewFile();
+            }   
+            fw = new FileWriter(archivo.getAbsoluteFile(),true);
+            escritor = new BufferedWriter(fw);
+            //            archivo = new File("Ventas.txt");
+            //            fw = new FileWriter(archivo);
+            //            fichero = new BufferedWriter(fw);
             addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(java.awt.event.WindowEvent evt) {
-                try {
-                    fichero.close();
-                    fw.close();
-                } catch (IOException ex) {
-                    Logger.getLogger(CTPV.class.getName()).log(Level.SEVERE, null, ex);
+                public void windowClosing(java.awt.event.WindowEvent evt) {
+                    try {
+                        escritor.close();
+                        fw.close();
+                    } catch (IOException ex) {
+                        Logger.getLogger(CTPV.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
-            }
-        });
+            });
         } catch (IOException ex) {
             Logger.getLogger(CTPV.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -156,17 +164,20 @@ public class CTPV extends javax.swing.JFrame {
             VentanaInterna cliente = ventanasInternas.get(id);
             DefaultTableModel tabla = (DefaultTableModel) cliente.getjTable1().getModel();
             if(tabla.getRowCount() > 0){
-                fichero.append(cliente.getTitle() + ": ["+ formatoHora.format(fechaActual)+"]("+formatoFecha.format(fechaActual)+")\n");
+                escritor.append(cliente.getTitle() + ": ["+ formatoHora.format(fechaActual)+"]("+formatoFecha.format(fechaActual)+")\n");
                 for (int i = 0; i < tabla.getRowCount(); i++) {
                 String lineaPedido = "";
                 for (int j = 0; j < tabla.getColumnCount(); j++){ 
                     String producto = tabla.getValueAt(i, j)+ " ";
                     lineaPedido += producto;
                 }
-                fichero.append("\t"+lineaPedido + "\n");
+                escritor.append("\t# "+lineaPedido + "\n");
                 }
-                fichero.append("\n");
+                escritor.append("\n");
             }
+            escritor.close();
+            fw.close();
+            
             jDesktopPane1.remove(cliente);
             JOptionPane.showMessageDialog(null, "Cliente servido.");
             repaint();

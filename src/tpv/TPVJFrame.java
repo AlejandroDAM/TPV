@@ -75,7 +75,7 @@ public class TPVJFrame extends JFrame {
             oos = new ObjectOutputStream(cliente.getOutputStream());
             oos.writeObject(informacionTPV);
             oos.close();
-            cliente.close();
+            //cliente.close();
         } catch (IOException ex) {
             Logger.getLogger(TPVJFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -105,7 +105,7 @@ public class TPVJFrame extends JFrame {
         InformacionTPV informacionTPV = new InformacionTPV(ID, 0);
         //ObjectOutputStream oos;
         try {
-            cliente = new Socket("127.0.0.1", PUERTO);
+            //cliente = new Socket("127.0.0.1", PUERTO);
             oos = new ObjectOutputStream(cliente.getOutputStream());
             oos.writeObject(informacionTPV);
             oos.close();

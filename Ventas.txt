@@ -1,0 +1,11 @@
+TPV 0: [18:21:28](27/05/2015)
+	# Barcelo 1 3.40 
+	# Gatorade 1 1.70 
+	# Ballantines 1 3.50 
+	# Fanta 1 1.40 
+
+TPV 1: [18:22:18](27/05/2015)
+	# Barcelo 1 3.40 
+	# Ballantines 1 3.50 
+	# Bacardi 1 3.40 
+

@@ -6,6 +6,11 @@
 
 package monitorventas;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import javax.swing.ImageIcon;
 
 /**
@@ -20,6 +25,48 @@ public class MV extends javax.swing.JFrame {
     public MV() {
         initComponents();
         setIconImage(new ImageIcon(getClass().getResource("/iconos/icono-monitor.png")).getImage());
+        inicializarHilo();
+    }
+    public void contarLineasFichero() throws FileNotFoundException, IOException {
+        File archivo = new File("Ventas.txt");
+        FileReader fr = new FileReader(archivo);
+        BufferedReader bf = new BufferedReader(fr);
+
+        long numeroLineasTotal = 0;
+        long numerolineasMañana = 0;
+        long numerolineasTarde = 0;
+
+        String linea;
+        String lineaHora; 
+        String hora = "";
+
+        while ((linea = bf.readLine()) != null) {
+            numeroLineasTotal++;
+            
+            try {
+                if (linea.contains("[")) {
+                    System.out.println(linea);
+                    hora = linea.substring(8, 10);
+                    System.out.println(hora);
+                } 
+                if(Integer.parseInt(hora) > 8 && Integer.parseInt(hora) < 14){
+                    if(linea.contains("#")){
+                        numerolineasMañana++;
+                    }
+                }else if(Integer.parseInt(hora) > 16 && Integer.parseInt(hora) < 20){
+                    if(linea.contains("#")){
+                        numerolineasTarde++;
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        txtLineas.setText(Long.toString(numeroLineasTotal));
+        txtMañana.setText(Long.toString(numerolineasMañana));
+        txtTarde.setText(Long.toString(numerolineasTarde));
     }
 
     /**
@@ -36,9 +83,9 @@ public class MV extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
+        txtMañana = new javax.swing.JTextField();
+        txtLineas = new javax.swing.JTextField();
+        txtTarde = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Monitor de Ventas");
@@ -57,11 +104,11 @@ public class MV extends javax.swing.JFrame {
         jLabel4.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel4.setText("Total Ventas por la tarde (16 -20 horas):");
 
-        jTextField1.setText("jTextField1");
+        txtMañana.setEnabled(false);
 
-        jTextField2.setText("jTextField1");
+        txtLineas.setEnabled(false);
 
-        jTextField3.setText("jTextField1");
+        txtTarde.setEnabled(false);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -75,16 +122,16 @@ public class MV extends javax.swing.JFrame {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel4)
                                 .addGap(18, 18, 18)
-                                .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(txtTarde, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel2)
                                 .addGap(114, 114, 114)
-                                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(txtLineas, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addContainerGap(35, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtMañana, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(35, 35, 35))))
         );
         jPanel1Layout.setVerticalGroup(
@@ -93,15 +140,15 @@ public class MV extends javax.swing.JFrame {
                 .addGap(44, 44, 44)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtLineas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(45, 45, 45)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtMañana, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(46, 46, 46)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel4)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtTarde, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(68, Short.MAX_VALUE))
         );
 
@@ -165,6 +212,26 @@ public class MV extends javax.swing.JFrame {
             }
         });
     }
+    
+    public void inicializarHilo(){
+        //Creo objeto HiloRecibirDatos
+        HiloFichero hilo = new HiloFichero(this);
+        //Creo un hilo del objeto de HiloRecibirDatos
+        Thread th = new Thread(hilo);
+        th.start();
+    }
+
+    public void setTxtLineas(String txtLineas) {
+        this.txtLineas.setText(txtLineas);
+    }
+
+    public void setTxtMañana(String txtMañana) {
+        this.txtMañana.setText(txtMañana);
+    }
+
+    public void setTxtTarde(String txtTarde) {
+        this.txtTarde.setText(txtTarde);
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
@@ -172,8 +239,8 @@ public class MV extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
+    private javax.swing.JTextField txtLineas;
+    private javax.swing.JTextField txtMañana;
+    private javax.swing.JTextField txtTarde;
     // End of variables declaration//GEN-END:variables
 }
