@@ -6,22 +6,19 @@
 
 package ctpv;
 
-import java.awt.Image;
-import java.awt.Toolkit;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
-import tpv.ProductoPedido;
 
 /**
  *
@@ -45,7 +42,7 @@ public class CTPV extends javax.swing.JFrame {
     public CTPV() {
         try {
             initComponents();
-            //setIconImage(new ImageIcon(getClass().getResource("/ctpv/icono.png")).getImage());
+            setIconImage(new ImageIcon(getClass().getResource("/iconos/icono.png")).getImage());
             ventanasInternas = new HashMap<Long, VentanaInterna>();
             new HiloEscuchador(this).start();
             archivo = new File("Ventas.txt");
@@ -150,19 +147,26 @@ public class CTPV extends javax.swing.JFrame {
                 contadorTPV++;
     }
 	
-    public void removerVentana(long id){
+    public synchronized void removerVentana(long id){
         try{
+            //Formateando la fecha:
+            Date fechaActual = new Date(System.currentTimeMillis());
+            DateFormat formatoHora = new SimpleDateFormat("HH:mm:ss");
+            DateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
             VentanaInterna cliente = ventanasInternas.get(id);
             DefaultTableModel tabla = (DefaultTableModel) cliente.getjTable1().getModel();
-            fichero.append(cliente.getTitle() + "\n");
-            for (int i = 0; i < tabla.getRowCount(); i++) {
+            if(tabla.getRowCount() > 0){
+                fichero.append(cliente.getTitle() + ": ["+ formatoHora.format(fechaActual)+"]("+formatoFecha.format(fechaActual)+")\n");
+                for (int i = 0; i < tabla.getRowCount(); i++) {
                 String lineaPedido = "";
-                for (int j = 0; j < tabla.getColumnCount(); j++) {
-                    lineaPedido += tabla.getValueAt(i, j);
+                for (int j = 0; j < tabla.getColumnCount(); j++){ 
+                    String producto = tabla.getValueAt(i, j)+ " ";
+                    lineaPedido += producto;
                 }
-                fichero.append(lineaPedido + "\n");
+                fichero.append("\t"+lineaPedido + "\n");
+                }
+                fichero.append("\n");
             }
-            fichero.append("\n");
             jDesktopPane1.remove(cliente);
             JOptionPane.showMessageDialog(null, "Cliente servido.");
             repaint();

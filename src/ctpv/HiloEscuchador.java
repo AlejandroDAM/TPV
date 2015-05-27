@@ -1,5 +1,6 @@
 package ctpv;
 
+import comunicacion.HiloComunicador;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
@@ -7,6 +8,7 @@ import java.net.Socket;
 
 import comunicacion.InformacionTPV;
 import java.io.ObjectOutputStream;
+import java.net.SocketException;
 import java.util.HashMap;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -32,6 +34,13 @@ public class HiloEscuchador extends Thread {
         try {
             ServerSocket servidor = new ServerSocket(PUERTO);
             while (true) {
+                if (contador < NUM_CLIENTES){
+                    new HiloComunicador(servidor.accept(),ventanaServidor).start();
+                    contador = ventanaServidor.getContadorTPV();
+                }else{
+                    System.out.println("Maximas conexiones establecidas");
+                }
+                /*
                 Socket conexionCliente = servidor.accept();
                 contador = ventanaServidor.getContadorTPV();
                 ObjectInputStream entrada = new ObjectInputStream(conexionCliente.getInputStream());
@@ -63,12 +72,9 @@ public class HiloEscuchador extends Thread {
                         }else{
                             System.out.println("Maximas conexiones establecidas");
                         }
-                    }
+                    }*/
             }
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
