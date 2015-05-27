@@ -41,7 +41,7 @@ public class HiloRecibirDatos implements Runnable {
                 paquete = new DatagramPacket(mandados, mandados.length);
                 servidor.receive(paquete);
 
-                File recibido = paquete.getData();
+                //File recibido = paquete.getData();
 
                 //Recuperar clave privada
                 FileInputStream fis = new FileInputStream("Clave.privada");
@@ -58,8 +58,8 @@ public class HiloRecibirDatos implements Runnable {
                 Cipher rsa = Cipher.getInstance("RSA/ECB/PKCS1Padding");
 
                 rsa.init(Cipher.DECRYPT_MODE, clavePrivada);
-                byte[] bytesDesencriptados = rsa.doFinal(recibido);
-                String textoDesencripado = new String(bytesDesencriptados);
+                //byte[] bytesDesencriptados = rsa.doFinal(recibido);
+                //String textoDesencripado = new String(bytesDesencriptados);
                 
                 
 
@@ -77,11 +77,11 @@ public class HiloRecibirDatos implements Runnable {
             Logger.getLogger(HiloRecibirDatos.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InvalidKeyException ex) {
             Logger.getLogger(HiloRecibirDatos.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IllegalBlockSizeException ex) {
+        } /*catch (IllegalBlockSizeException ex) {
             Logger.getLogger(HiloRecibirDatos.class.getName()).log(Level.SEVERE, null, ex);
         } catch (BadPaddingException ex) {
             Logger.getLogger(HiloRecibirDatos.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        }*/
 
     }
 
